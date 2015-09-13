@@ -4,8 +4,11 @@ using namespace dataP;
 
 int Datapoint::class_counter;	// Allocate memory for static class member, initialized to 0 by default
 
-Datapoint::Datapoint(const real_t* featureArray, unsigned int feature_size) : state(UNVISITED), ID(class_counter++), clusterID(-999), mfeature_size(feature_size)
+Datapoint::Datapoint(const real_t* featureArray, unsigned int feature_size) 
+: state(UNVISITED), ID(class_counter++), clusterID(-999), mfeature_size(feature_size)
 {
+  mSetStateCounter = 0; 
+  mHeapPushCounter = 0;
   mfeatureP = featureArray;
 }
 
@@ -39,14 +42,34 @@ unsigned int Datapoint::getLatestID(void)
   return class_counter;
 }
 
+const unsigned int & Datapoint::getSetStateCounter(void) const
+{
+  return mSetStateCounter;
+}
+
+const unsigned int & Datapoint::getHeapPushCounter(void) const
+{
+  return mHeapPushCounter;
+}
+
 void Datapoint::setState(ClusterState new_state)
 {
   state = new_state;
+  mSetStateCounter++;
 }
  
 void Datapoint::setClusterID(int cID)
 {
   clusterID = cID;
+}
+
+void Datapoint::incrementSetStateCounter(void)
+{
+  mSetStateCounter++;
+}
+void Datapoint::incrementHeapPushCounter(void)
+{
+  mHeapPushCounter++;
 }
 
 void Datapoint::resetClassCounter(void)

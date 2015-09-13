@@ -49,7 +49,6 @@ real_t OPTICS::calcDist(const unsigned int &i, const unsigned int &j)
   {
       l2dist += pow(Data[i].getFeatures()[k] - Data[j].getFeatures()[k], 2);
   }
-
   return sqrt(l2dist);
 }
 
@@ -66,17 +65,17 @@ real_t OPTICS::getDistance(const unsigned int &i, const unsigned int &j)
 std::vector< dataP::OpticsDatapoint* > OPTICS::RQ(unsigned int i)
 {
   std::vector< dataP::OpticsDatapoint* > seedList;
-    
+  
   for( unsigned int j = 0; j < dataSize; j++ )
   {
     if ( i == j ) {
-      continue; 
+      continue;
     }
-    if ( getDistance(i ,j) <= epsilon ) {
+    if ( getDistance(i ,j) <= epsilon and i != j ) {
       seedList.push_back( &Data[j] );
     }
   }
-
+    
   return seedList;
 }
 
@@ -86,20 +85,15 @@ std::vector< dataP::OpticsDatapoint* > OPTICS::RQ(unsigned int i)
 
 void OPTICS::run(void)
 {
-    int ss = 0;
-    std::cout << "unvisite passesd " << Data.size() << std::endl;
     if ( useStartIdx ) {
          expandClusterOrder(Data[startIdx]);
     }
     for ( auto & d : Data )
     {
       if ( d.getState() == dataP::UNVISITED ) {
-	
-	  ss++;
           expandClusterOrder(d);
       }
     }
-    std::cout << "unvisite passesd " << ss << std::endl;
 }
 
 void OPTICS::expandClusterOrder(dataP::OpticsDatapoint & d)
@@ -108,14 +102,13 @@ void OPTICS::expandClusterOrder(dataP::OpticsDatapoint & d)
     while( !minSortedHeap.empty() )
     {
         // Add current datapoint to clusterorder
-        dataP::OpticsDatapoint* currPt = minSortedHeap.pop_top();	
+        dataP::OpticsDatapoint* currPt = minSortedHeap.pop_top();
         clusterOrder.push_back(*currPt);
         addToCluster(*currPt);
 
 	// find neighbours and calculate coredistance
         std::vector< dataP::OpticsDatapoint* > neighbours = RQ(currPt->getID());
-
-	currPt->setCoreDist( calculateCoreDistance(*currPt, neighbours) );
+        currPt->setCoreDist( calculateCoreDistance(*currPt, neighbours) );
 
 	// Expand the cluster
         for ( auto & i : neighbours )
@@ -123,14 +116,13 @@ void OPTICS::expandClusterOrder(dataP::OpticsDatapoint & d)
             if ( i->getState() != dataP::UNVISITED ) {
                 continue;
             }
-            real_t nrdist = getDistance(currPt->getID(), i->getID());
+            real_T nrdist = getDistance(currPt->getID(), i->getID());
             if ( currPt->getCoreDist()  > nrdist ) {
                 nrdist = currPt->getCoreDist();
             }
-            if (i->getReachabilityDist() == dataP::OpticsDatapoint::INF and i->getHeapPushCounter() == 0 ) {
+            if (i->getReachabilityDist() == dataP::OpticsDatapoint::INF ) {
                 i->setReachabilityDist(nrdist);
                 minSortedHeap.push(i);
-		i->incrementHeapPushCounter();
             }
             else if (nrdist < i->getReachabilityDist()) {
                 i->setReachabilityDist(nrdist);
@@ -183,7 +175,7 @@ void OPTICS::addToCluster(const dataP::OpticsDatapoint & d)
   }
 }
 
-void OPTICS::updateClusterIDs(const real_t & threshold)
+void OPTICS::updateClusterIDs(real_t threshold)
 {
   clusterIDs.clear();
   clusterThreshold = threshold;
@@ -207,9 +199,7 @@ void OPTICS::showClustering(void) const
     std::cout << "Data ID: " << clusterOrder.ids[i] << 
     "\t, ClusterState: " << Data[clusterOrder.ids[i]].getState() << 
     "\t, ClusterID: " << Data[clusterOrder.ids[i]].getClusterID() <<
-    "\t, reachability distance: " <<  clusterOrder.reachabilityDists[i] << //std::endl;
-    "\t, setStateCounter: " << Data[clusterOrder.ids[i]].getSetStateCounter() << // std::endl;
-    "\t, heapPushCounter: " << Data[clusterOrder.ids[i]].getHeapPushCounter() << std::endl;
+    "\t, reachability distance: " <<  clusterOrder.reachabilityDists[i] << std::endl;
     //"\t, core-distance: " << Data[clusterOrder.ids[i]].getCoreDist() <<std::endl;
   }
 }
@@ -224,7 +214,6 @@ void OPTICS::showInfo(void) const
   printf("# DataDim: %i\n", dataDim);
   printf("# Heap size: %u\n", minSortedHeap.size());
   printf("# Cluster order size: %u\n", clusterOrder.size());
-  printf("# Numer of processed Datapoints: %u\n", numProcessedIDs);
   printf("# Number of found clusters: %u\n", numProcessedIDs > 0 ? currentClusterID+1 : currentClusterID);
   printf("################# END INFO #################\n");
 }

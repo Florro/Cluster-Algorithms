@@ -56,7 +56,7 @@ class Datapoint {
 public:
   
   Datapoint(void) = default;
-  Datapoint(const real_t* featureArray, unsigned int mfeature_size);
+  Datapoint(const real_t*& featureArray, unsigned int mfeature_size);
   virtual ~Datapoint(void);
   
   // Getter functions
@@ -66,23 +66,18 @@ public:
   const real_t* getFeatures(void) const;
   const unsigned int & getSize(void) const;
   static unsigned int getLatestID(void);
-  const unsigned int & getSetStateCounter(void) const;
-  const unsigned int & getHeapPushCounter(void) const;
     
   // Setter functions:
   void setState(ClusterState new_state);
   void setClusterID(int cID);
-  void incrementSetStateCounter(void);
-  void incrementHeapPushCounter(void);
   static void resetClassCounter(void);
 
+  unsigned int setStateCounter;
+  unsigned int heapPushCounter; 
 
 protected:
   
   static int class_counter;
-  unsigned int mSetStateCounter;
-  unsigned int mHeapPushCounter; 
-
 
   ClusterState state;
   unsigned int ID;
