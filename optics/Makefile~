@@ -1,14 +1,14 @@
 CXX = g++
-CXXFLAGS = -Wall -O3 -std=c++11 -march=native `pkg-config --cflags opencv`
-OPENCVFLAGS = `pkg-config --libs opencv`
+CXXFLAGS = -Wall -O3 -std=c++11 -march=native 
+CXXFLAGS += -lopencv_highgui -lopencv_core -lopencv_imgproc -lopencv_objdetect -lopencv_imgcodecs 
 
 all: run-clustering
 
 run-clustering: main.cpp datapoint.o optics_datapoint.o dataheap.o optics.o minioptics.o
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(OPENCVFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 datapoint.o: datapoint/datapoint.cpp datapoint/datapoint.h
-	$(CXX) $(CXXFLAGS) $(DFLAG) -c -o $@ $< 
+	$(CXX) $(CXXFLAGS) $(DFLAG) -c -o $@ $<
 
 optics_datapoint.o: datapoint/optics_datapoint.cpp datapoint/optics_datapoint.h
 	$(CXX) $(CXXFLAGS) $(DFLAG) -c -o $@ $<
