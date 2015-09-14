@@ -8,7 +8,6 @@ Datapoint::Datapoint(const real_t* featureArray, unsigned int feature_size)
 : state(UNVISITED), ID(class_counter++), clusterID(-999), mfeature_size(feature_size)
 {
   mSetStateCounter = 0; 
-  mHeapPushCounter = 0;
   mfeatureP = featureArray;
 }
 
@@ -47,10 +46,6 @@ const unsigned int & Datapoint::getSetStateCounter(void) const
   return mSetStateCounter;
 }
 
-const unsigned int & Datapoint::getHeapPushCounter(void) const
-{
-  return mHeapPushCounter;
-}
 
 void Datapoint::setState(ClusterState new_state)
 {
@@ -67,10 +62,7 @@ void Datapoint::incrementSetStateCounter(void)
 {
   mSetStateCounter++;
 }
-void Datapoint::incrementHeapPushCounter(void)
-{
-  mHeapPushCounter++;
-}
+
 
 void Datapoint::resetClassCounter(void)
 {

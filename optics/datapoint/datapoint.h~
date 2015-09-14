@@ -80,6 +80,8 @@ protected:
   
   static int class_counter;
   unsigned int mSetStateCounter;
+  unsigned int mHeapPushCounter; 
+
 
   ClusterState state;
   unsigned int ID;

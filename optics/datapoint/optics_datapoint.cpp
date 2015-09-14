@@ -5,7 +5,10 @@ using namespace dataP;
 const real_t OpticsDatapoint::INF = std::numeric_limits<real_t>::max();
 
 OpticsDatapoint::OpticsDatapoint(const real_t* featureArray, unsigned int feature_size)
-: Datapoint(featureArray, feature_size), reachabilityDist( INF ), coreDist( INF ), isSeed( false ){}
+: Datapoint(featureArray, feature_size), reachabilityDist( INF ), coreDist( INF ), isSeed( false )
+{
+  mHeapPushCounter = 0;  
+}
 
 OpticsDatapoint::~OpticsDatapoint(void) {}
 
@@ -30,6 +33,12 @@ const bool & OpticsDatapoint::getSeedState(void) const
   return isSeed;
 }
 
+const unsigned int & OpticsDatapoint::getHeapPushCounter(void) const
+{
+  return mHeapPushCounter;
+}
+
+
 // Setter methods
 void OpticsDatapoint::setReachabilityDist(const real_t &d)
 {
@@ -49,6 +58,11 @@ void OpticsDatapoint::setSeedState(const bool & state)
 void OpticsDatapoint::setTmpDist(const real_t & d)
 {
   tmpDist = d;
+}
+
+void OpticsDatapoint::incrementHeapPushCounter(void)
+{
+  mHeapPushCounter++;
 }
 
 
